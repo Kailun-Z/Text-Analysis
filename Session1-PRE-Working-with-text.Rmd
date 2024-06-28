@@ -1,0 +1,259 @@
+---
+title: "Session 1: Working with Text"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+  word_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+---
+
+```{r setup, include=FALSE, cache = FALSE}
+require("knitr")
+## setting working directory
+opts_knit$set(root.dir = "/cloud/project/data")
+```
+
+# Preliminaries
+
+In this first session, we will explore some simple text processing of the babynames dataset, which contains information on the popularity of baby names in the US from 1880 to 2018. We will use some libraries that are useful for working with text and data, such as `stringr`, `babynames`, `dplyr`, `ggplot2` and `qdap`. Let's load these libraries first.
+
+```{r warning=FALSE, message=FALSE}
+library(stringr)
+library(babynames)
+library(dplyr)
+library(ggplot2)
+library(qdap)
+```
+
+# Working with text
+
+One simple thing we can do with text is to measure its length. For example, we can create a new column in the `my_names` data frame that contains the number of characters in each baby name. We can use the `nchar` function from `stringr` to do this. Let's see how the data frame looks like after adding this column.
+
+#### Create a column with the no. of characters in each baby name
+
+```{r warning=FALSE, message=FALSE}
+
+```
+
+Another thing we can do with data is to visualize it using plots. For example, we can create a plot that shows how the mean name length has changed over time for males and females. We can use `ggplot2` to do this. `ggplot2` is a powerful and flexible library for creating plots in R. Let's see how the plot looks like.
+
+#### Plot year against the mean `namelength` for males and females
+
+```{r warning=FALSE, message=FALSE}
+
+```
+
+#### Using pipes
+
+One of the features of `dplyr` is the pipe operator (`%>%`), which allows us to chain multiple functions together. This can make our code more readable and concise. For example, we can create the same plot as before using pipes. Let's see how the code looks like using pipes.
+
+```{r}
+
+```
+
+## ***YOUR TURN***
+
+1.  Plot the total number of babies born each year, broken down by gender.
+
+2.  Create a plot with year on the-axis and the most popular female name on the Y-axis.
+
+# Regular Expressions
+
+Sometimes, you want to find or change parts of a text that follow a certain pattern. For example, you might want to find all the email addresses in a text, or replace all the numbers with dashes. To do this, you can use regular expressions, or `regex` for short.
+
+Regex is like a code that tells R what kind of text you are looking for. You can use different symbols and letters to make your regex more specific or flexible. For example, you can use `^` to match the beginning of a text, or `.` to match any single character.
+
+To use regex in R, you need to load a library that has functions for regex. One such library is `stringr`, which has many useful functions for working with text and regex. For example, you can use `str_detect` to check if a text matches a regex, or `str_extract` to get the part of the text that matches a regex.
+
+Regex is a very handy tool for working with text in R. It lets you find and change parts of a text based on patterns that you define. This can help you with many tasks that involve analyzing or cleaning text data.
+
+## Meta characters
+
+There are 14 meta characters that carry special meaning inside regular expressions. We need to "escape" them with a `double backslash`. Think of "escaping" as stripping the character of its special meaning.
+
+| Description            | Character |
+|------------------------|-----------|
+| opening square bracket | [         |
+| closing square bracket | ]         |
+| backslash              | \\        |
+| caret                  | \^        |
+| dollar sign            | \$        |
+| period/dot             | .         |
+| vertical bar           | \|        |
+| question mark          | ?         |
+| asterisk               | \*        |
+| plus sign              | \+        |
+| opening curly brackets | {         |
+| closing curly brackets | }         |
+| opening parentheses    | (         |
+| closing parentheses    | )         |
+
+: Full stop (or dot) is a wildcard character will match anything in place other than a newline character.
+
+## Character classes
+
+A character class allows us to match a character specified inside the class. A character class is constructed with square brackets. The character class `[ab]` will match either an "a" or a "b".We can use a hyphen character to define a range of characters. Thus `[1-4]` is the same as `[1234]`.
+
+Certain character classes are so commonly used that they have been predefined with names. A couple of these character classes have even shorter shorthands. The class `[:digit:]` denotes all the digits 0, 1, 2, 3, 4, 5, 6, 7, 8, and 9 but it can also be described by `\d`. The following table provides these useful predefined character classes.
+
+| Description                                                       | Class              |
+|-------------------------------------------------------------------|--------------------|
+| Digits; [0-9]                                                     | [:digit:] or \\\\d |
+| Alphabetic characters, uppercase and lowercase [A-z]              | [:alpha:]          |
+| Alphanumeric characters, letters, and digits [A-z0-9]             | [:alnum:]          |
+| Graphical characters [[:alnum:][:punct:]]                         | [:graph:]          |
+| Printable characters [[:alnum:][:punct:][:space:]]                | [:print:]          |
+| Lowercase letters [a-z]                                           | [:lower:]          |
+| Uppercase letters [A-Z]                                           | [:upper:]          |
+| Control characters such as newline, carriage return, etc.         | [:cntrl:]          |
+| Punctuation characters: !"#\$%&'()\*+,-./:;\<=\>?\@[]\^\_\`{\|}\~ | [:punct:]          |
+| Space and tab                                                     | [:blank:]          |
+| Space, tab, vertical tab, newline, form feed, carriage return     | [:space:] or \\\\s |
+| Hexadecimal digits [0-9A-Fa-f]                                    | [:xdigit:]         |
+| Not space [\^[:space:]]                                           | \\\\S              |
+| Word characters: letters, digits, and underscores [A-z0-9\_]      | \\\\w              |
+| Non-word characters [\^A-z0-9\_]                                  | \\\\W              |
+| Non-digits [\^0-9]                                                | \\\\D              |
+
+## Quantifiers
+
+We can specify how many times we expect something to occur using quantifiers. If we want to find a digit with four numerals, we don't have to write `[:digit:][:digit:][:digit:][:digit:]`. Table below shows how to specify repetitions. Notice that `?` is shorthand for {0,1}, `*` is shorthand for {0,}, and `+` is shorthand for {1,}.
+
+| Regex | Matches               |
+|-------|-----------------------|
+| ?     | zero or one times     |
+| \*    | zero or more times    |
+| \+    | one or more times     |
+| {n}   | exactly n times       |
+| {n,}  | at least n times      |
+| {n,m} | between n and m times |
+
+## Lazy Quantifiers
+
+By default these matches are "greedy," meaning that they will try to match the longest string possible. We can instead make them "lazy" by placing a `?` after, as shown in Table below. This will make the regular expressions try to match the shortest string possible instead of the longest.
+
+| regex  | matches                                                              |
+|--------|----------------------------------------------------------------------|
+| ??     | zero or one times, prefers 0                                         |
+| \*?    | zero or more times, match as few times as possible                   |
+| +?     | one or more times, match as few times as possible                    |
+| {n}?   | exactly n times, match as few times as possible                      |
+| {n,}?  | at least n times, match as few times as possible                     |
+| {n,m}? | between n and m times, match as few times as possible but at least n |
+
+## Anchors
+
+The meta characters `^` and `$` have special meaning in regular expressions. They force the engine to check the beginning and end of the string, respectively, hence the name anchor. A mnemonic device to remember this is "First you get the power(\^) and then you get the money(\$)."
+
+# Using regular expressions
+
+We will use regular expressions to find and extract patterns in text data. We will use the `stringr` library, which provides functions for working with regular expressions. We will use a data frame called `oneyear_plusfinal4.csv`, which contains some text data. We will also use another data frame called `oct_delta.csv`, which contains tweets from Delta Airline's customer service in October of 2015. We will analyze these tweets using regular expressions to get some insights.
+
+### Illustration with oneyear dataframe
+
+```{r}
+oneyear <- read.csv("oneyear_plusfinal4.csv")
+head(oneyear) 
+```
+
+#### Records containing Customer
+
+First, we want to find out how many records in the `oneyear` data frame contain the word "Customer". We can use the `str_detect` function to check if each record matches this word. We can also use the `table` function to count how many records match and how many do not.
+
+```{r}
+
+```
+
+#### Records with numbers
+
+Next, we want to find out how many records in the `oneyear` data frame contain any numbers. We can use the `[:digit:]` character class to match any digit from 0 to 9. As before, we can use the `table` function to count how many records match and how many do not.
+
+```{r}
+
+```
+
+#### Removing HTML tags
+
+We notice that some records in the `oneyear` data frame contain HTML tags, such as \<p\> or \<br\>. These tags are not part of the text content and might interfere with our analysis. We want to remove them from the text. We can use the `str_remove_all` function to replace all occurrences of a pattern with an empty string. We can use the `<[^>]*>` regex pattern to match any HTML tag that starts with \< and ends with \>.
+
+```{r}
+
+```
+
+```{r}
+oneyear$text[1]
+```
+
+### Illustration with Delta Tweets
+
+We will now switch to the `oct_delta` data frame, which contains tweets from Delta Airline's customer service in October of 2015. We want to analyze these tweets using regular expressions to get some insights on questions such as:
+
+-   How many and which customers were serviced?
+
+-   How many sales representatives were involved?
+
+-   If urls and phone numbers were used in the tweets?
+
+-   What are the most frequently used words in the tweets?
+
+Let's first take a look at the `oct_delta` data frame.
+
+```{r}
+oct_delta <- read.csv("oct_delta.csv")
+head(oct_delta) 
+```
+
+We see that each row contains a tweet and some metadata, such as date, time, and source. We are mainly interested in the text of the tweets, so we will create a new data frame that contains only the tweet and a unique id for each tweet.
+
+```{r}
+tweets <- data.frame("id"=seq(1:nrow(oct_delta)),"text"=oct_delta$text)
+str(tweets)
+```
+
+### Finding tweets with 'delta'
+
+Suppose we want to find out how many and which tweets contain the word 'delta'. We can use the `str_detect` function to check if each tweet matches this word. We can also use the `str_to_lower` function to convert all the tweets to lowercase before matching, so that we don't miss any variations of capitalization. We can use the `which` function to get the indices of the tweets that match, and the `sum` function to get the total number of matches.
+
+```{r}
+
+```
+
+We can also view the tweets that match using the `str_view_all` function, which highlights the matching parts. We can either view a specific tweet by its index, or view all the matching tweets at once.
+
+```{r, eval=FALSE}
+
+```
+
+Or you can see them all as follows.
+
+```{r, eval=FALSE}
+
+```
+
+## ***YOUR TURN***
+
+1.  You notice in the tweets that the first word contains the twitter handle of the customer. Extract the first word from each tweet and gather the twitter handles into a data frame.
+2.  Similarly, the last word in each tweet has the abbreviation of the customer service representative that responded. Let's gather these and put them into a data frame.What you notice is that a representative can tweet multiple times to respond to a customer. Account for this appropriately.
+3.  Extract all urls and phone numbers and put them in dataframes.
+
+# Use of regular expressions
+
+Regular expressions (regex) are a way to find or change parts of a text that follow a certain pattern. You can use different symbols and letters to make your regex more specific or flexible. Regex can help you with many things that involve working with text and language. Here are some examples:
+
+**Breaking up text into words**: Regex can help you split a text into smaller pieces, called words or tokens. This is often the first thing you need to do when you want to do something with a text, such as finding out what it is about or translating it to another language.
+
+**Getting rid of unwanted text**: Regex can help you remove things from a text that you don't need, such as punctuation marks or web page codes. This can make your text cleaner and easier to work with.
+
+**Named Entity Recognition**: Regex can help you find and get specific kinds of things from a text, such as names of people or places. This can help you understand who or what the text is talking about.
+
+**Part-of-speech Tagging**: Regex can help you find out what kind of words are in a text, such as nouns, verbs, or adjectives. This can help you understand how the text is structured and what it means.
+
+**Finding feelings and opinions**: Regex can help you find and get words or phrases from a text that show how someone feels or thinks about something.
